@@ -1,0 +1,47 @@
+services:
+  bash-service:
+    environment:
+      NODE_TYPE: IOT_NODE
+    image: taxi-exp
+version: '3.7'
+x-fogify:
+  networks:
+    - name: net-10ms-delay
+      bidirectional:
+        bandwidth: 100Mbps
+        latency:
+          delay: 10ms
+        drop: 0.1%
+    - name: net-5ms-delay
+      bidirectional:
+        bandwidth: 100Mbps
+        latency:
+          delay: 5ms
+        drop: 0.1%
+  nodes:
+  - capabilities:
+      memory: 0.1G
+      processor:
+        clock_speed: 1400
+        cores: 1
+    name: node-1
+  topology:
+  - label: node-1-server
+    networks:
+    - net-10ms-delay
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-2-server
+    networks:
+    - net-10ms-delay
+    - net-5ms-delay
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-3-server
+    networks:
+    - net-5ms-delay
+    node: node-1
+    replicas: 1
+    service: bash-service

@@ -1,0 +1,74 @@
+services:
+  car-workload:
+    environment:
+      NODE_TYPE: IOT_NODE
+    image: taxi-exp:0.0.1
+    volumes:
+    - /home/ubuntu/data:/data
+  cloud-server:
+    environment:
+      NODE_TYPE: CLOUD_NODE
+    image: taxi-exp:0.0.1
+  mec-svc-1:
+    environment:
+      NODE_TYPE: EDGE_NODE
+      REGION: bronx
+    image: taxi-exp:0.0.1
+version: '3.7'
+x-fogify:
+  networks:
+    - name: internet
+      uplink:
+        bandwidth: 10Mbps
+        latency:
+          delay: 50ms
+        drop: 0.1%
+      downlink:
+        bandwidth: 5Mbps
+        latency:
+          delay: 50ms
+    - name: edge-net-1
+      bidirectional:
+        bandwidth: 100Mbps
+        latency:
+          delay: 5ms
+        drop: 0.1%
+  nodes:
+  - capabilities:
+      memory: 1G
+      processor:
+        clock_speed: 1400
+        cores: 1
+    name: cloud-server-node
+  - capabilities:
+      memory: 1G
+      processor:
+        clock_speed: 1400
+        cores: 1
+    name: edge-node
+  - capabilities:
+      memory: 0.5G
+      processor:
+        clock_speed: 700
+        cores: 1
+    name: car-node
+  topology:
+  - label: cloud-server
+    networks:
+    - internet
+    node: cloud-server-node
+    replicas: 1
+    service: cloud-server
+  - label: mec-svc-1
+    networks:
+    - edge-net-1
+    - internet
+    node: edge-node
+    replicas: 1
+    service: mec-svc-1
+  - label: car-workload-1
+    networks:
+    - edge-net-1
+    node: car-node
+    replicas: 1
+    service: car-workload
