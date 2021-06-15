@@ -1,4 +1,6 @@
 ## README
+This is a git repository containing resources to evaluate the fogify framework.
+
 
 # Current Work & Setup
 
