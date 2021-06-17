@@ -21,3 +21,9 @@ TODOS:
 - Work on python script with matplotlib to graph output from ping statistics
 - Work on ping image so that it can also execute bandwidth tests
 - Create a whole together python script to run fogify, deploy the topology, inject the host names, wait some time for pings and bandwith to complete, then copy results files for later analysis. Undeploy fogify.
+
+
+
+### June 16
+1. Add experiments section - shared github with Guilia
+2. Finish up bandwidth test automation
