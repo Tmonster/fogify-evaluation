@@ -27,3 +27,40 @@ TODOS:
 ### June 16
 1. Add experiments section - shared github with Guilia
 2. Finish up bandwidth test automation
+
+
+## June 18
+1. Finish up bandwidth automation
+2. Implement threading
+3. Execute a couple of bandwidth tests.
+
+
+
+## June 22
+Discussing test setup
+1. Testing Bandwidth and latencies
+- First test between only two continers
+  - Find max bandwidth (how much can the docker bridge hold?)
+  - Find how reliable the latency is
+  - what is the highest bandwidth with no latency?
+
+- Test specifically latency with a growing number of containers. When does latency become affected?
+- Keep the latencies the same as you increase the number of containers.
+  - 10ms (taken from pings to facebook)
+- further research is to test variable latencies
+
+
+- bandwidth is tested using the iperf3 utility
+  - Is bandwidth enforced between two containers?
+  - first step is to find the maximum bandwidth
+    - share the max CPU frequency between them.
+  - does bandwidth remain consistent as the number container grow.
+  - does bandwidth decrease by the amount of containers deployed?
+    - or are other overheads involved?
+  - The hypothesis is that bandwidth does not remain consistent
+  - Tested in a local environment with X ram.
+
+2. How to add CPU usage?
+
+
+

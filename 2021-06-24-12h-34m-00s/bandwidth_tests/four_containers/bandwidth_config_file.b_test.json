@@ -1,0 +1,50 @@
+{
+    "config": {
+        "stagger": true,
+        "time": 60
+    },
+    "tests": [
+        {
+            "server": "3abd237f4c3d",
+            "client": "40646fc28c1c",
+            "time": 60,
+            "port": 50000,
+            "output_file_name": "fogify_node-4.1_fogify_node-3.1.json"
+        },
+        {
+            "server": "3abd237f4c3d",
+            "client": "85768875193e",
+            "time": 60,
+            "port": 50001,
+            "output_file_name": "fogify_node-4.1_fogify_node-2.1.json"
+        },
+        {
+            "server": "3abd237f4c3d",
+            "client": "73168a7ebf26",
+            "time": 60,
+            "port": 50002,
+            "output_file_name": "fogify_node-4.1_fogify_node-1.1.json"
+        },
+        {
+            "server": "40646fc28c1c",
+            "client": "85768875193e",
+            "time": 60,
+            "port": 50003,
+            "output_file_name": "fogify_node-3.1_fogify_node-2.1.json"
+        },
+        {
+            "server": "40646fc28c1c",
+            "client": "73168a7ebf26",
+            "time": 60,
+            "port": 50004,
+            "output_file_name": "fogify_node-3.1_fogify_node-1.1.json"
+        },
+        {
+            "server": "85768875193e",
+            "client": "73168a7ebf26",
+            "time": 60,
+            "port": 50005,
+            "output_file_name": "fogify_node-2.1_fogify_node-1.1.json"
+        }
+    ]
+}

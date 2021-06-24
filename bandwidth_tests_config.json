@@ -1,0 +1,22 @@
+{
+  "two_containers": {
+    "yaml_file": "./yamls/bandwidth_tests/two_containers.yaml",
+    "time": "60",
+    "stagger": "true"
+  },
+  "two_containers_concurrent": {
+    "yaml_file": "./yamls/bandwidth_tests/two_containers.yaml",
+    "time": "60",
+    "concurrent": "true"
+  },
+  "four_containers": {
+    "yaml_file": "./yamls/bandwidth_tests/four_containers.yaml",
+    "time": "60",
+    "stagger": "true"
+  },
+  "four_containers_concurrent": {
+    "yaml_file": "./yamls/bandwidth_tests/four_containers.yaml",
+    "time": "60",
+    "concurrent": "true"
+  }
+}

@@ -1,0 +1,15 @@
+{
+    "config": {
+        "concurrent": true,
+        "time": 60
+    },
+    "tests": [
+        {
+            "server": "b787d48c2ff9",
+            "client": "bfafcdb6eb63",
+            "time": 60,
+            "port": 50000,
+            "output_file_name": "fogify_node-1.1_fogify_node-2.1.json"
+        }
+    ]
+}

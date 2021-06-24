@@ -1,0 +1,6 @@
+from FogifySDK import FogifySDK
+
+fogify = FogifySDK("http://controller:5000","docker-compose-bash-services.yaml")
+
+fogify.undeploy()
+fogify.deploy()

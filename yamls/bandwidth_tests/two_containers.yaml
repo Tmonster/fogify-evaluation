@@ -1,0 +1,33 @@
+services:
+  bash-service:
+    environment:
+      NODE_TYPE: "bandwidth_test"
+    image: pingimage:0.1
+version: '3.7'
+x-fogify:
+  networks:
+    - name: network-delay-2
+      bidirectional:
+        bandwidth: 100Mbps
+        latency:
+          delay: 20ms
+  nodes:
+  - capabilities:
+      memory: 0.1G
+      processor:
+        clock_speed: 200
+        cores: 1
+    name: node-1
+  topology:
+  - label: node-1
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-2
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
