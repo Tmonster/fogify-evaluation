@@ -62,5 +62,7 @@ Discussing test setup
 
 2. How to add CPU usage?
 
-
+## June 24th
+1. Tests look good
+2. Do network bandwidth tests on separate networks influence each other?
 

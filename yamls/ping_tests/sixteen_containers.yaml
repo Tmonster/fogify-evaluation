@@ -1,0 +1,117 @@
+services:
+  bash-service:
+    environment:
+      NODE_TYPE: "ping_test"
+    image: pingimage:0.1
+version: '3.7'
+x-fogify:
+  networks:
+  - name: network-delay-2
+    bidirectional:
+      bandwidth: 100Mbps
+      latency:
+        delay: 20ms
+  nodes:
+  - capabilities:
+      memory: 0.1G
+      processor:
+        clock_speed: 200
+        cores: 1
+    name: node-1
+  topology:
+  - label: node-1
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-2
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-3
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-4
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-5
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-6
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-7
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-8
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-9
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-10
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-11
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-12
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-13
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-14
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-15
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service
+  - label: node-16
+    networks:
+    - network-delay-2
+    node: node-1
+    replicas: 1
+    service: bash-service

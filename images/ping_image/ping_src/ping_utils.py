@@ -1,7 +1,11 @@
 import pingparsing
 import time
+import os
 
 from utils.file_utils import file_exists
+
+
+host_name = os.environ['HOSTNAME']
 
 def pingparse_helper(ping_parser, ping_output, host):
     new_host_name = get_new_host_name(host)
@@ -39,6 +43,7 @@ def get_new_host_name(old_host):
 def save_statistics(stats):
     file = open('ping_stats.csv', 'a')
     line = ""
+    line += str(host_name) + ","
     line += str(stats["destination"]) + ","
     line += str(stats["packet_transmit"]) + ","
     line += str(stats["packet_receive"]) + ","

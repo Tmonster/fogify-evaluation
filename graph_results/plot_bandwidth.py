@@ -99,10 +99,15 @@ def main():
 
     files = get_files_from_directory(args_)
     for file in files:
+        if file.find(".b_test.json") >= 0:
+            # that's the test config file, doesn't have results
+            continue
         json_data = get_data_from_file(file)
         json_data['file_name'] = file
         parsed_result = parse_json_data(json_data)
         mbytes = parsed_result.get_in_Mbytes_per_second()
+        if len(parsed_result.results) == 0:
+            continue
         plt.plot(mbytes, linestyle = 'solid', label=parsed_result.get_label())
 
     plt.xlabel("time")

@@ -7,18 +7,17 @@ import datetime
 from utils import ping_test
 from utils import bandwidth_test
 
-__PING_TESTS_CONFIG__ = "ping_tests_config.json"
-__BANDWIDTH_TEST_CONFIG__ = "bandwidth_tests_config.json"
 
+
+from bandwidth_tests_config import bandwidth_tests_config
+from ping_tests_config import ping_tests_config
 
 
 def run_ping_tests(ping_results_dir):
-    f = open(__PING_TESTS_CONFIG__, "r")
-    ping_test_config = json.load(f)
-    tests = ping_test_config.keys()
+    tests = ping_tests_config.keys()
     for test in tests:
         print(f"executing PING test: {test}")
-        test_config = ping_test_config[test]
+        test_config = ping_tests_config[test]
         test_results_dir = f"{ping_results_dir}/{test}"
         make_dir(test_results_dir)
         ping_test.run(test_config, test_results_dir)
@@ -26,13 +25,10 @@ def run_ping_tests(ping_results_dir):
 
 
 def run_bandwidth_tests(bandwidth_results_dir):
-
-    f = open(__BANDWIDTH_TEST_CONFIG__, "r")
-    bandwidth_test_config = json.load(f)
-    tests = bandwidth_test_config.keys()
+    tests = bandwidth_tests_config.keys()
     for test in tests:
         print(f"executing BANDWIDTH test: {test}")
-        test_config = bandwidth_test_config[test]
+        test_config = bandwidth_tests_config[test]
         test_results_dir = f"{bandwidth_results_dir}/{test}"
         make_dir(test_results_dir)
         bandwidth_test.run(test_config, test_results_dir)
@@ -72,7 +68,7 @@ def main():
     make_dir(bandwidth_results_dir)
     make_dir(ping_results_dir)
 
-    run_bandwidth_tests(bandwidth_results_dir)
+    # run_bandwidth_tests(bandwidth_results_dir)
     run_ping_tests(ping_results_dir)
 
 
