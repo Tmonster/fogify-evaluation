@@ -28,16 +28,21 @@ class all_tests_one_file:
         for dest in self.destinations:
             results = self.results[dest]
             max_rtts = list(map(lambda x: float(x.rtt_max), results))
-            all_max_rtts.append(max_rtts)
+            times = list(map(lambda x: float(x.packet_time), results))
+            b = x_plot_y_plot(times, max_rtts)
+            all_max_rtts.append(b)
+
         return all_max_rtts
 
     def get_avg_rtts(self):
-        all_max_rtts = []
+        all_avg_rtts = []
         for dest in self.destinations:
             results = self.results[dest]
-            rtt_avgs = list(map(lambda x: float(x.rtt_avg), results))
-            all_max_rtts.append(rtt_avgs)
-        return all_max_rtts
+            avg_rtts = list(map(lambda x: float(x.rtt_avg), results))
+            times = list(map(lambda x: float(x.packet_time), results))
+            b = x_plot_y_plot(times, avg_rtts)
+            all_avg_rtts.append(b)
+        return all_avg_rtts
 
     # normalize the tests so they all have the same lenght
     def normalize_tests(self):
@@ -53,6 +58,12 @@ class all_tests_one_file:
                     first_result = self.results[dest][0]
                     self.results[dest].append(copy.deepcopy(first_result))
 
+
+class x_plot_y_plot:
+
+    def __init__(self, x, y):
+        self.x_plot = x
+        self.y_plot = y
 
 
 class ping_pair:
@@ -70,6 +81,7 @@ class ping_pair:
         self.rtt_mdev = csv_line[9]
         self.packet_duplicate_rate = csv_line[10]
         self.packet_duplicate_count = csv_line[11]
+        self.packet_time = csv_line[12]
 
 
 def get_data_from_file(file):
@@ -101,24 +113,33 @@ def parse_csv_data(csv_line):
     return result
 
 
-def get_files_from_directory(args_):
+def get_files_from_directory(directory, extension):
     try:
-        directory = args_.directory
         files = []
         for f in os.listdir(directory):
-            if os.path.isfile(os.path.join(directory, f)):
-                files.append(os.path.join(directory,f))
+            if os.path.isfile(os.path.join(directory, f)) and f.find(extension) >= 0:
+                files.append(os.path.join(directory, f))
         return files
     except Exception as e:
         print(f"directory {args_.directory} doesn't have files or threw an error")
         exit()
+
+def make_x_plot(size_cpu_measures):
+    interval = 0.2
+    last = 0
+    ret = []
+    for i in range(size_cpu_measures):
+        ret.append(last)
+        last += interval
+    return ret
 
 def main():
     parser = argparse.ArgumentParser(description='plot ping test results')
     parser.add_argument('directory', type=str, help="directory with bandwidth test results")
     args_ = parser.parse_args()
 
-    files = get_files_from_directory(args_)
+    directory = args_.directory + "results/"
+    files = get_files_from_directory(directory, ".csv")
     all_file_results = []
     for file in files:
         if file.find(".txt") >= 0:
@@ -127,23 +148,41 @@ def main():
         file_results = get_data_from_file(file)
         all_file_results.append(file_results)
 
-    # for res in all_file_results:
-    #     res.normalize_tests()
-
-
     file_results_0 = all_file_results[0]
 
-    max_rtts = file_results_0.get_max_rtt()
-    for max_rtt in max_rtts:
-        plt.plot(max_rtt, linestyle = 'solid')
+    fig, ax1 = plt.subplots()
 
-    # rtt_avgs = file_results_0.get_avg_rtts()
-    # for rtt_avg in rtt_avgs:
-    #     np_arr = numpy.array(rtt_avg)
-    #     plt.plot(np_arr, linestyle = 'solid')
+    ax1.set_xlabel('time (s)')
+    ax1.set_ylabel('rtt_avg in ms')
+    ax1.set_ylim(ymin=0,ymax=70)
 
-    plt.xlabel("time")
-    plt.ylabel("rtt_avg in ms")
+    # max_rtts = file_results_0.get_max_rtt()
+    # for max_rtt in max_rtts:
+    #     plt.plot(max_rtt, linestyle = 'solid')
+
+    for file in all_file_results:
+        rtt_avgs = file.get_avg_rtts()
+        for rtt_avg in rtt_avgs:
+            np_arr_x = numpy.array(rtt_avg.x_plot)
+            np_arr_y = numpy.array(rtt_avg.y_plot)
+            ax1.plot(np_arr_x, np_arr_y, linestyle = 'dotted')
+
+
+    ax2 = ax1.twinx()
+    ax2.set_ylabel("cpu utilization (%)", color='tab:blue')
+    ax2.set_ylim(ymin=0, ymax=100)
+    cpu_utilization = get_files_from_directory(args_.directory, ".csv")[0]        
+
+    with open(cpu_utilization) as cpu_data:
+        reader = csv.reader(cpu_data, delimiter=",")
+        # should only be one row
+        for row in reader:
+            row = row[:-1]
+            x_axis = make_x_plot(len(row))
+            cpu_data = list(map(lambda x: float(x), row))
+            ax2.plot(x_axis, cpu_data, color='tab:blue', linestyle='dotted', label="cpu_utilization")
+            ax2.tick_params(axis='y',labelcolor='tab:blue')
+
     plt.legend()
     plt.show()
 

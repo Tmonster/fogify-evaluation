@@ -66,3 +66,7 @@ Discussing test setup
 1. Tests look good
 2. Do network bandwidth tests on separate networks influence each other?
 
+
+## June 25th
+1. We don't have any way to test actual edge computing ideas, because there is no publicly available edge framework
+2. The next step is simulation. Let's make sure we are simulating a proper 

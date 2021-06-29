@@ -3,12 +3,15 @@ import subprocess
 import json
 import sys
 import time
+import threading
 
 from utils.docker_utils import get_container_ids_and_hosts
 from utils.docker_utils import inject_file_to_all_containers
 from utils.docker_utils import get_file_from_container
 from utils.topology_utils import deploy_topology
 from utils.topology_utils import delete_topology
+from utils.cpu_utils import record_cpu_utilization
+
 
 def find_nth(input_str, to_find, n):
     i = 0
@@ -96,15 +99,21 @@ def make_config(args_):
         test_config['concurrent'] = True
     return test_config
 
-
-
 def run(config, results_dir):
     yaml = config["yaml_file"]
     response = deploy_topology(yaml)
 
+    stop_thread = False
+    thread_args = (
+        results_dir,
+        config["time"],
+        lambda : stop_thread)
+    cpu_metrics_thread = threading.Thread(target=record_cpu_utilization, 
+        args=thread_args)
+
     if response.status_code != 200:
         print("could not deploy the topology, skipping test")
-        print(f"response is {response}")
+        print(f"response content is {response.content}")
         # possible it's because there is already a deployed instance
         # can delete topology just in case
         r = delete_topology()
@@ -130,12 +139,16 @@ def run(config, results_dir):
                                             container_names,
                                             file,
                                             test_config)
+        cpu_metrics_thread.start()
         inject_file_to_all_containers(container_ids, file)
         if 'stagger' in test_config:
             # sleep the amount of the test and a buffer of 10 seconds
-            time.sleep(num_tests * (60 + 10))
+            time.sleep(num_tests * (test_config['time'] + 10))
         elif 'concurrent' in test_config:
-            time.sleep(60 + 30)
+            time.sleep(test_config['time'] + 10)
+        stop_thread = True
+        print("test done. stopping thread")
+        cpu_metrics_thread.join()
         extract_results_from_containers(file, results_dir)
     except Exception as e:
         print(f"Error here. Dont know what. e = {e}")

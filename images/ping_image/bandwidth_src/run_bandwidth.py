@@ -56,15 +56,10 @@ def get_bandwidth_test_config():
 
 
 def poll_for_bandwidth_test_config():
-    test_files = glob.glob("*.b_test.json")
-    if len(test_files) == 0:
-        time.sleep(5)
-        poll_for_bandwidth_test_config()
-
-
-def whatever(caller):
-    print(f"whatever called from {caller}")
-    time.sleep(2)
+    while True:
+        test_files = glob.glob("*.b_test.json")
+        if len(test_files) > 0:
+            break
 
 def execute_tests(bandwidth_tests):
     global host_name

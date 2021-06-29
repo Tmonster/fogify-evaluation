@@ -71,7 +71,7 @@ def deploy_topology(yaml_path):
     if response.status_code == 500:
         import pdb
         pdb.set_trace()
-        print(f"response content is {response.content}")
+        print(f"response content is {response.content}. Going to delete a topology")
     wait_for_topology_action()
     for i in range(5):
         if topology_deployed(yaml_path):

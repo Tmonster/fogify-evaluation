@@ -102,3 +102,10 @@ pdb.set_trace()
 3. There are constraints as to where containers can be put, need to open an issue for this.
 4. 
 
+
+
+## STEPS FOR TESTING ON A CLOUD INSTANCE
+1. install fogify
+2. download the repository
+3. build the ping image
+4. execute `python run_test_suite.py`

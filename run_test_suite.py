@@ -3,15 +3,15 @@ import requests
 import pathlib
 import json
 import datetime
+import threading
 
 from utils import ping_test
 from utils import bandwidth_test
-
-
+from utils.cpu_utils import record_cpu_utilization
+from utils.file_utils import make_dir
 
 from bandwidth_tests_config import bandwidth_tests_config
 from ping_tests_config import ping_tests_config
-
 
 def run_ping_tests(ping_results_dir):
     tests = ping_tests_config.keys()
@@ -21,11 +21,15 @@ def run_ping_tests(ping_results_dir):
         test_results_dir = f"{ping_results_dir}/{test}"
         make_dir(test_results_dir)
         ping_test.run(test_config, test_results_dir)
+        # t runs for twice the test time, in case the test takes too long
+        # and we don't want to just kill the thread so we will just join 
+        # it with a timeout
         print(f"DONE.")
 
 
 def run_bandwidth_tests(bandwidth_results_dir):
     tests = bandwidth_tests_config.keys()
+    
     for test in tests:
         print(f"executing BANDWIDTH test: {test}")
         test_config = bandwidth_tests_config[test]
@@ -33,14 +37,6 @@ def run_bandwidth_tests(bandwidth_results_dir):
         make_dir(test_results_dir)
         bandwidth_test.run(test_config, test_results_dir)
         print(f"DONE.")
-
-def make_dir(results_dir):
-    try:
-        pathlib.Path(f"./{results_dir}").mkdir()
-    except FileExistsError as e:
-        # ignore that test_results already exists
-        print(f"could not make directory {results_dir}. Exiting")
-
 
 def get_results_dir_name(args_):
     if args_.results_dir:
@@ -65,7 +61,7 @@ def main():
 
     make_dir(results_dir)
 
-    make_dir(bandwidth_results_dir)
+    # make_dir(bandwidth_results_dir)
     make_dir(ping_results_dir)
 
     # run_bandwidth_tests(bandwidth_results_dir)

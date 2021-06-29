@@ -40,28 +40,10 @@ def get_new_host_name(old_host):
     return old_host
 
 
-def save_statistics(stats):
-    file = open('ping_stats.csv', 'a')
-    line = ""
-    line += str(host_name) + ","
-    line += str(stats["destination"]) + ","
-    line += str(stats["packet_transmit"]) + ","
-    line += str(stats["packet_receive"]) + ","
-    line += str(stats["packet_loss_rate"]) + ","
-    line += str(stats["packet_loss_count"]) + ","
-    line += str(stats["rtt_min"]) + ","
-    line += str(stats["rtt_avg"]) + ","
-    line += str(stats["rtt_max"]) + ","
-    line += str(stats["rtt_mdev"]) + ","
-    line += str(stats["packet_duplicate_rate"]) + ","
-    line += str(stats["packet_duplicate_count"]) + "\n"
-    file.write(line)
-    file.close()
-
 def poll_and_get_hosts():
     host_file_not_present = True
     while not file_exists("hosts.txt"):
-        time.sleep(3)
+        time.sleep(1)
     return get_hosts()
 
 
