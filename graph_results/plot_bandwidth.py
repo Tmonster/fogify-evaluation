@@ -143,6 +143,7 @@ def main():
             continue
         ax1.plot(mbytes, linestyle = 'solid', label=parsed_result.get_label())
 
+    ax1.legend(loc=0)
     ax2 = ax1.twinx()
     ax2.set_ylabel("cpu utilization (%)", color='tab:blue')
     ax2.set_ylim(ymin=0, ymax=100)
@@ -161,8 +162,8 @@ def main():
             ax2.tick_params(axis='y',labelcolor='tab:blue')
             
 
+    ax2.legend(loc=1)
     plt.title(label=experiment_name.title(), loc="center")
-    plt.legend()
     plt.show()
 
 
