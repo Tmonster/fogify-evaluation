@@ -7,6 +7,9 @@ import copy
 import csv
 
 
+from legend_helper import MulticolorPatch 
+from legend_helper import MulticolorPatchHandler
+
 HOST_NAME_TO_READABLE_NAME = {}
 
 class all_tests_one_file:
@@ -133,10 +136,26 @@ def make_x_plot(size_cpu_measures):
         last += interval
     return ret
 
+
+def print_stats(all_y):
+    # print standard deviation
+    print(f"standard deviation: {numpy.std(all_y)}")
+    print(f"variance: {numpy.var(all_y)}")
+    # print 90th, 95th percentile
+    print(f"90th percentile: {numpy.percentile(all_y, 0.9)}")
+    print(f"95th percentile: {numpy.percentile(all_y, 0.95)}")
+    # print number of 
+    print(f"number of pings recorded: {len(all_y)}")
+    print(f"number of pings > 45ms {len(all_y[all_y > 45])}")
+
 def main():
     parser = argparse.ArgumentParser(description='plot ping test results')
     parser.add_argument('directory', type=str, help="directory with bandwidth test results")
     args_ = parser.parse_args()
+
+    import matplotlib.pyplot as plt
+    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
     directory = args_.directory + "results/"
     files = get_files_from_directory(directory, ".csv")
@@ -153,19 +172,29 @@ def main():
     fig, ax1 = plt.subplots()
 
     ax1.set_xlabel('time (s)')
-    ax1.set_ylabel('rtt_avg in ms')
-    ax1.set_ylim(ymin=0,ymax=70)
+    ax1.set_ylabel('round trip time in ms')
+    ax1.set_ylim(ymin=0,ymax=200)
 
     # max_rtts = file_results_0.get_max_rtt()
     # for max_rtt in max_rtts:
     #     plt.plot(max_rtt, linestyle = 'solid')
+
+    def size_helper(j):
+        if j > 50:
+            return 7
+        else: 
+            return 1
+
+    all_y = numpy.array([])
 
     for file in all_file_results:
         rtt_avgs = file.get_avg_rtts()
         for rtt_avg in rtt_avgs:
             np_arr_x = numpy.array(rtt_avg.x_plot)
             np_arr_y = numpy.array(rtt_avg.y_plot)
-            ax1.plot(np_arr_x, np_arr_y, linestyle = 'dotted')
+            all_y = numpy.append(all_y, np_arr_y)
+            size = [size_helper(x) for x in np_arr_y]
+            ax1.scatter(np_arr_x, np_arr_y, s=size, label="ping result")
 
 
     ax2 = ax1.twinx()
@@ -183,7 +212,22 @@ def main():
             ax2.plot(x_axis, cpu_data, color='tab:blue', linestyle='dotted', label="cpu_utilization")
             ax2.tick_params(axis='y',labelcolor='tab:blue')
 
-    plt.legend()
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax2.get_legend_handles_labels()
+
+    print_stats(all_y)
+
+    colors = ['tab:orange', 'b', 'y', 'r', 'm']
+    # colors = ['tab:orange', 'tab:orange', 'tab:orange', 'tab:orange', 'tab:orange']
+    
+    color_patch = MulticolorPatch(colors, 'circle')
+    handles = [color_patch, lines_2[0]]
+
+    # import pdb
+    # pdb.set_trace()
+    ax2.legend(handles, ["ping result", labels_2[0]], loc=0,
+        handler_map={MulticolorPatch: MulticolorPatchHandler()})
+    plt.subplots_adjust(top=0.98)
     plt.show()
 
 

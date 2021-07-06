@@ -62,10 +62,10 @@ def main():
     make_dir(results_dir)
 
     make_dir(bandwidth_results_dir)
-    make_dir(ping_results_dir)
+    # make_dir(ping_results_dir)
 
     run_bandwidth_tests(bandwidth_results_dir)
-    run_ping_tests(ping_results_dir)
+    # run_ping_tests(ping_results_dir)
 
 
 if __name__ == "__main__":

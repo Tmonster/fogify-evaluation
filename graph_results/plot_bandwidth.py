@@ -5,9 +5,17 @@ import json
 import os
 import csv
 
+from legend_helper import MulticolorPatch 
+from legend_helper import MulticolorPatchHandler
+
+
+# This is the first important line:
+from matplotlib import rcParams
+
 _BYTE_ = 1000
 _KILOBYTES_ = 8 * 1000
-_MEGABYTES_ = 8 * 1000 * 1000 
+_MEGA_ = 1000 * 1000
+_MEGABYTES_ = 8 * 1000 * 1000
 
 
 class FullTest:
@@ -22,6 +30,12 @@ class FullTest:
         for res in self.results:
             ret.append(res.get_Mbytes_per_second())
         return numpy.array(ret[:-1])
+
+    def get_in_megabits_per_second(self):
+        ret = []
+        for res in self.results:
+            ret.append(res.get_megabits_per_second())
+        return numpy.array(ret[1:-1])
 
     def add_label(self, label):
         self.label = label
@@ -42,6 +56,9 @@ class interval_result:
 
     def get_Mbytes_per_second(self):
         return float(self.bits_per_second) / float(_MEGABYTES_)
+
+    def get_megabits_per_second(self):
+        return float(self.bits_per_second) / float(_MEGA_)
 
 
 
@@ -114,6 +131,19 @@ def get_experiment_name(args_):
     exp_name = exp_name.replace("_", " ")
     return exp_name
 
+
+def print_stats(all_y):
+    # print standard deviation
+    print(f"standard deviation: {numpy.std(all_y)}")
+    print(f"variance: {numpy.var(all_y)}")
+    # print 90th, 95th percentile
+    print(f"90th percentile: {numpy.percentile(all_y, 0.9)}")
+    print(f"95th percentile: {numpy.percentile(all_y, 0.95)}")
+    # print number of 
+    # print(f"number of pings recorded: {len(all_y)}")
+    # print(f"number of pings > 45ms {len(all_y[all_y > 45])}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='plot bandwidth tests')
     parser.add_argument('directory', type=str, help="directory with bandwidth test results")
@@ -123,12 +153,18 @@ def main():
     json_files = get_files_from_directory(args_, ".json")
 
 
+    import matplotlib.pyplot as plt
+    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
     # https://matplotlib.org/2.2.5/gallery/api/two_scales.html
     fig, ax1 = plt.subplots()
     
-    ax1.set_xlabel('time (s)')
-    ax1.set_ylabel('MegaBytes/second')
+    ax1.set_xlabel('Time (s)', fontsize=12)
+    ax1.set_ylabel('MegaBits/second', fontsize=12)
     
+
+    all_bytedata = numpy.array([])
     # import pdb
     # pdb.set_trace()
     for file in json_files:
@@ -138,14 +174,17 @@ def main():
         json_data = get_data_from_file(file)
         json_data['file_name'] = file
         parsed_result = parse_json_data(json_data)
-        mbytes = parsed_result.get_in_Mbytes_per_second()
+        mbytes = parsed_result.get_in_megabits_per_second()
+        all_bytedata = numpy.append(all_bytedata, mbytes)
         if len(parsed_result.results) == 0:
             continue
         ax1.plot(mbytes, linestyle = 'solid', label=parsed_result.get_label())
 
-    ax1.legend(loc=0)
+    # ax1.legend(loc=4)
+    ax1.xaxis.set_ticks(numpy.arange(0,70,5))
+    ax1.yaxis.set_ticks(numpy.arange(0,250,50))
     ax2 = ax1.twinx()
-    ax2.set_ylabel("cpu utilization (%)", color='tab:blue')
+    ax2.set_ylabel("CPU utilization (%)", color='tab:blue', fontsize=12)
     ax2.set_ylim(ymin=0, ymax=100)
     cpu_utilization = get_files_from_directory(args_, ".csv")[0]
 
@@ -158,12 +197,29 @@ def main():
             row = row[:-1]
             x_axis = make_x_plot(len(row))
             cpu_data = list(map(lambda x: float(x), row))
-            ax2.plot(x_axis, cpu_data, color='tab:blue', linestyle='dotted', label="cpu_utilization")
+            ax2.plot(x_axis, cpu_data, color='tab:blue', linestyle='dotted', label="CPU utilization")
             ax2.tick_params(axis='y',labelcolor='tab:blue')
             
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax2.get_legend_handles_labels()
 
-    ax2.legend(loc=1)
-    plt.title(label=experiment_name.title(), loc="center")
+
+    colors = []
+
+    for h in lines_1:
+        colors.append(h.get_color())
+    
+    color_patch = MulticolorPatch(colors, 'rect')
+    handles = [color_patch, lines_2[0]]
+
+
+    ax2.legend(handles, ["bandwidth connection", labels_2[0]], loc=0, 
+        handler_map={MulticolorPatch: MulticolorPatchHandler()})
+
+
+    print_stats(all_bytedata)
+    # plt.title(label=experiment_name.title(), loc="center", fontsize=14)
+    plt.subplots_adjust(top=0.98)
     plt.show()
 
 
