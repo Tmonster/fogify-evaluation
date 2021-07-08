@@ -139,6 +139,7 @@ def make_x_plot(size_cpu_measures):
 
 def print_stats(all_y):
     # print standard deviation
+    print(f"mean: {numpy.mean(all_y)}")
     print(f"standard deviation: {numpy.std(all_y)}")
     print(f"variance: {numpy.var(all_y)}")
     # print 90th, 95th percentile

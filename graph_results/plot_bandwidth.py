@@ -134,11 +134,13 @@ def get_experiment_name(args_):
 
 def print_stats(all_y):
     # print standard deviation
+    print(f"mean: {numpy.mean(all_y)}")
     print(f"standard deviation: {numpy.std(all_y)}")
     print(f"variance: {numpy.var(all_y)}")
     # print 90th, 95th percentile
     print(f"90th percentile: {numpy.percentile(all_y, 0.9)}")
     print(f"95th percentile: {numpy.percentile(all_y, 0.95)}")
+    print(f"max: {numpy.amax(all_y)}")
     # print number of 
     # print(f"number of pings recorded: {len(all_y)}")
     # print(f"number of pings > 45ms {len(all_y[all_y > 45])}")
